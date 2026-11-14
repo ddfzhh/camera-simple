@@ -1,4 +1,4 @@
-// Draws the Pinhole app icon with CoreGraphics and writes a .iconset folder.
+// Draws the Camera Simple app icon with CoreGraphics and writes a .iconset folder.
 // Usage: swift scripts/make-icon.swift <output.iconset>
 // Then:  iconutil -c icns <output.iconset> -o AppIcon.icns
 

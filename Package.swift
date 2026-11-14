@@ -2,9 +2,9 @@
 import PackageDescription
 
 let package = Package(
-    name: "Pinhole",
+    name: "CameraSimple",
     platforms: [.macOS(.v12)],
     targets: [
-        .executableTarget(name: "Pinhole", path: "Sources/Pinhole")
+        .executableTarget(name: "CameraSimple", path: "Sources/CameraSimple")
     ]
 )

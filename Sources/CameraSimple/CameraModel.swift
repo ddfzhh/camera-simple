@@ -18,6 +18,10 @@ final class CameraModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelega
     @Published var flash = false
     @Published private(set) var thumbnail: NSImage?
     @Published private(set) var saveFolder: URL
+    /// Pixel size the active camera delivers, detected each time a camera is activated.
+    @Published private(set) var nativeSize: CGSize?
+    /// Chosen aspect ratio id; nil means the camera's own (default) ratio.
+    @Published private(set) var aspectID: String?
 
     let session = AVCaptureSession()
     /// Width / height of the on-screen preview, used to crop saved photos to what is visible.
@@ -26,7 +30,7 @@ final class CameraModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelega
     private struct Shot { let aspect: CGFloat; let zoom: CGFloat; let folder: URL }
 
     private let photoOutput = AVCapturePhotoOutput()
-    private let queue = DispatchQueue(label: "io.github.ddfzhh.pinhole.session")
+    private let queue = DispatchQueue(label: "io.github.ddfzhh.camera-simple.session")
     private var discovery: AVCaptureDevice.DiscoverySession?
     private var observation: NSKeyValueObservation?
     private var outputAdded = false
@@ -40,7 +44,7 @@ final class CameraModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelega
         } else {
             let pictures = FileManager.default.urls(for: .picturesDirectory, in: .userDomainMask).first
                 ?? FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Pictures")
-            saveFolder = pictures.appendingPathComponent("Pinhole", isDirectory: true)
+            saveFolder = pictures.appendingPathComponent("Camera Simple", isDirectory: true)
         }
         super.init()
     }
@@ -135,12 +139,55 @@ final class CameraModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelega
                 self.outputAdded = true
             }
             session.commitConfiguration()
+            // Detect what this camera actually delivers with the chosen preset.
+            var detected: CGSize?
+            if let device {
+                let d = CMVideoFormatDescriptionGetDimensions(device.activeFormat.formatDescription)
+                if d.width > 0, d.height > 0 { detected = CGSize(width: Int(d.width), height: Int(d.height)) }
+            }
+            DispatchQueue.main.async { self.nativeSize = detected }
             if device != nil {
                 if !session.isRunning { session.startRunning() }
             } else if session.isRunning {
                 session.stopRunning()
             }
         }
+    }
+
+    // MARK: Aspect ratio
+
+    struct AspectOption: Identifiable, Equatable {
+        let id: String        // "16:9", "1:1", "9:16", or the camera's own ratio
+        let ratio: CGFloat    // width / height
+        let isDefault: Bool   // matches what the camera delivers
+    }
+
+    private static let commonRatios: [(String, CGFloat)] = [("1:1", 1), ("16:9", 16.0 / 9), ("9:16", 9.0 / 16)]
+    private static let knownRatios: [(String, CGFloat)] =
+        commonRatios + [("4:3", 4.0 / 3), ("3:2", 3.0 / 2), ("3:4", 3.0 / 4), ("2:3", 2.0 / 3)]
+
+    private static func same(_ a: CGFloat, _ b: CGFloat) -> Bool { abs(a - b) / b < 0.02 }
+
+    /// The camera's own ratio first (marked default), then the other common ratios.
+    var aspectOptions: [AspectOption] {
+        let size = nativeSize ?? CGSize(width: 16, height: 9)
+        let native = size.width / max(size.height, 1)
+        let name = Self.knownRatios.first { Self.same(native, $0.1) }?.0
+            ?? "\(Int(size.width))×\(Int(size.height))"
+        var options = [AspectOption(id: name, ratio: native, isDefault: true)]
+        for (id, ratio) in Self.commonRatios where id != name {
+            options.append(AspectOption(id: id, ratio: ratio, isDefault: false))
+        }
+        return options
+    }
+
+    var currentAspect: AspectOption {
+        let options = aspectOptions
+        return options.first { $0.id == aspectID } ?? options[0]
+    }
+
+    func chooseAspect(_ option: AspectOption) {
+        aspectID = option.isDefault ? nil : option.id
     }
 
     // MARK: Zoom
@@ -261,7 +308,7 @@ final class CameraModel: NSObject, ObservableObject, AVCapturePhotoCaptureDelega
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.dateFormat = "yyyy-MM-dd HH.mm.ss"
-        let base = "Pinhole " + formatter.string(from: Date())
+        let base = "Camera Simple " + formatter.string(from: Date())
         var url = shot.folder.appendingPathComponent(base + ".jpg")
         var n = 2
         while FileManager.default.fileExists(atPath: url.path) {

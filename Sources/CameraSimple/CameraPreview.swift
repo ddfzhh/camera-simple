@@ -17,6 +17,8 @@ final class PreviewNSView: NSView {
         layer?.backgroundColor = NSColor.black.cgColor
         layer?.masksToBounds = true
         previewLayer.videoGravity = .resizeAspectFill
+        // Show the preview mirrored, like a mirror. Saved photos are not flipped.
+        previewLayer.setAffineTransform(CGAffineTransform(scaleX: -1, y: 1))
         layer?.addSublayer(previewLayer)
     }
 
@@ -32,7 +34,9 @@ final class PreviewNSView: NSView {
         CATransaction.begin()
         CATransaction.setDisableActions(true)
         let w = bounds.width * zoom, h = bounds.height * zoom
-        previewLayer.frame = CGRect(x: bounds.midX - w / 2, y: bounds.midY - h / 2, width: w, height: h)
+        // Set bounds and position rather than frame: the layer is flipped (mirror).
+        previewLayer.bounds = CGRect(x: 0, y: 0, width: w, height: h)
+        previewLayer.position = CGPoint(x: bounds.midX, y: bounds.midY)
         CATransaction.commit()
     }
 }

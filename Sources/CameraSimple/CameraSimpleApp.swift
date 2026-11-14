@@ -5,7 +5,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 }
 
 @main
-struct PinholeApp: App {
+struct CameraSimpleApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var model = CameraModel()
 
@@ -26,6 +26,12 @@ struct PinholeApp: App {
                     .keyboardShortcut("-", modifiers: .command)
                 Button("Actual Size") { model.setZoom(1) }
                     .keyboardShortcut("0", modifiers: .command)
+                Divider()
+                ForEach(model.aspectOptions) { option in
+                    Button((option == model.currentAspect ? "✓ " : "    ") + option.id + (option.isDefault ? "  Default" : "")) {
+                        model.chooseAspect(option)
+                    }
+                }
                 Divider()
                 Button("Choose Save Folder…") { model.chooseFolder() }
                     .keyboardShortcut("o", modifiers: .command)
