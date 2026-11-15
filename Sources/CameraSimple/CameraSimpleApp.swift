@@ -28,7 +28,7 @@ struct CameraSimpleApp: App {
                     .keyboardShortcut("0", modifiers: .command)
                 Divider()
                 ForEach(model.aspectOptions) { option in
-                    Button((option == model.currentAspect ? "✓ " : "    ") + option.id + (option.isDefault ? "  Default" : "")) {
+                    Button((option == model.currentAspect ? "✓ " : "    ") + option.title) {
                         model.chooseAspect(option)
                     }
                 }

@@ -14,10 +14,6 @@ func color(_ hex: UInt32, _ alpha: CGFloat = 1) -> CGColor {
     ])!
 }
 
-func gradient(_ a: CGColor, _ b: CGColor) -> CGGradient {
-    CGGradient(colorsSpace: space, colors: [a, b] as CFArray, locations: [0, 1])!
-}
-
 func circle(_ c: CGPoint, _ r: CGFloat) -> CGRect {
     CGRect(x: c.x - r, y: c.y - r, width: r * 2, height: r * 2)
 }
@@ -29,46 +25,41 @@ func render(pixels: Int) -> CGImage {
     ctx.scaleBy(x: CGFloat(pixels) / 1024, y: CGFloat(pixels) / 1024)
     let center = CGPoint(x: 512, y: 512)
 
-    // Rounded-rect body (standard macOS icon grid: 824 pt square, 100 pt margin).
-    let body = CGPath(roundedRect: CGRect(x: 100, y: 100, width: 824, height: 824),
-                      cornerWidth: 185, cornerHeight: 185, transform: nil)
-    ctx.saveGState()
-    ctx.setShadow(offset: CGSize(width: 0, height: -10), blur: 24, color: color(0x000000, 0.3))
+    // Ink Line style: white body, black outlines, one red-orange spot colour.
+    let ink = color(0x111111), red = color(0xFF5A36), white = color(0xFFFFFF)
+
+    // Rounded-rect body. The outline's outer edge sits on the standard macOS icon grid
+    // (824 pt square, 100 pt margin): a 794 pt rect with a 30 pt stroke.
+    let body = CGPath(roundedRect: CGRect(x: 115, y: 115, width: 794, height: 794),
+                      cornerWidth: 170, cornerHeight: 170, transform: nil)
     ctx.addPath(body)
-    ctx.setFillColor(color(0x15151A))
+    ctx.setFillColor(white)
     ctx.fillPath()
-    ctx.restoreGState()
-
-    ctx.saveGState()
     ctx.addPath(body)
-    ctx.clip()
-    ctx.drawLinearGradient(gradient(color(0x2A2A32), color(0x0B0B0F)),
-                           start: CGPoint(x: 512, y: 924), end: CGPoint(x: 512, y: 100), options: [])
-    ctx.restoreGState()
-
-    // Lens, drawn as flat amber line art on the dark body.
-    let amber = color(0xFFB340)
-
-    // Outer ring.
-    ctx.setStrokeColor(amber)
-    ctx.setLineWidth(46)
-    ctx.strokeEllipse(in: circle(center, 250))
-
-    // Inner ring.
-    ctx.setLineWidth(22)
-    ctx.strokeEllipse(in: circle(center, 148))
-
-    // Centre dot with a faint glow.
-    ctx.drawRadialGradient(gradient(color(0xFFB340, 0.35), color(0xFFB340, 0)),
-                           startCenter: center, startRadius: 0, endCenter: center, endRadius: 120, options: [])
-    ctx.setFillColor(amber)
-    ctx.fillEllipse(in: circle(center, 54))
-
-    // Highlight: a short arc inside the outer ring, upper left.
-    ctx.setLineCap(.round)
-    ctx.setLineWidth(18)
-    ctx.addArc(center: center, radius: 200, startAngle: .pi * 0.62, endAngle: .pi * 0.88, clockwise: false)
+    ctx.setStrokeColor(ink)
+    ctx.setLineWidth(30)
     ctx.strokePath()
+
+    // Lens: a red disc with a black outline.
+    ctx.setFillColor(red)
+    ctx.fillEllipse(in: circle(center, 290))
+    ctx.setLineWidth(30)
+    ctx.strokeEllipse(in: circle(center, 290))
+
+    // Highlight: a short white arc inside the lens, upper left.
+    ctx.setStrokeColor(white)
+    ctx.setLineCap(.round)
+    ctx.setLineWidth(28)
+    ctx.addArc(center: center, radius: 224, startAngle: .pi * 0.62, endAngle: .pi * 0.88, clockwise: false)
+    ctx.strokePath()
+
+    // Inner ring, white.
+    ctx.setLineWidth(32)
+    ctx.strokeEllipse(in: circle(center, 150))
+
+    // Centre dot, black.
+    ctx.setFillColor(ink)
+    ctx.fillEllipse(in: circle(center, 60))
 
     return ctx.makeImage()!
 }

@@ -15,7 +15,7 @@ It is also meant to be quick to reach: press Command + Space, type "camera", pre
 - Choose the folder photos are saved to
 - Switch between cameras, including external ones
 - Zoom in and out
-- Aspect ratios: 1:1, 16:9, 9:16, with the camera's own ratio marked as Default
+- Aspect ratios: Full (the camera's own shape, the default), 16:9, 1:1, 9:16; the window keeps the picture's shape
 
 ## Install
 
