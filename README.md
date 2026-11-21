@@ -19,9 +19,15 @@ It is also meant to be quick to reach: press Command + Space, type "camera", pre
 
 ## Install
 
-Download the DMG from the [latest release](https://github.com/ddfzhh/camera-simple/releases/latest), open it, and drag Camera Simple to Applications. Works on Apple Silicon and Intel Macs with macOS 12 or later.
+Download [Camera-Simple-1.2.0.dmg](https://github.com/ddfzhh/camera-simple/releases/download/v1.2.0/Camera-Simple-1.2.0.dmg) (or the DMG from the [latest release](https://github.com/ddfzhh/camera-simple/releases/latest)), open it, and drag Camera Simple to Applications.
 
-The app is not notarized by Apple, so macOS blocks it the first time. Open System Settings > Privacy & Security and click "Open Anyway". This is needed once.
+Or with [Homebrew](https://brew.sh):
+
+```bash
+brew install --cask ddfzhh/tap/camera-simple
+```
+
+Works on Apple Silicon and Intel Macs with macOS 12 or later. The app is signed and notarized by Apple, so it opens normally.
 
 ## License
 
