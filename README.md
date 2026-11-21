@@ -1,4 +1,4 @@
-# Camera Simple
+# Simple Camera for MacBook
 
 A simple camera app for the Mac.
 
@@ -19,7 +19,7 @@ Camera Simple is named for what it does. Press Command + Space, type "camera", p
 
 ## Install
 
-Download the DMG from the [latest release](https://github.com/ddfzhh/camera-simple/releases/latest), open it, and drag Camera Simple to Applications.
+Download the DMG from the [latest release](https://github.com/ddfzhh/simple-camera-for-macbook/releases/latest), open it, and drag Camera Simple to Applications.
 
 Or with [Homebrew](https://brew.sh):
 
