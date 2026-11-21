@@ -4,9 +4,9 @@ A simple camera app for the Mac.
 
 ## Why
 
-A MacBook doesn't come with a simple camera app you can use as a mirror or to take a quick photo. Camera Simple is that app.
+Every Mac comes with Photo Booth, but it is called Photo Booth, not Camera. When you just want the camera, to check your hair or take a quick photo, Photo Booth is not the name that comes to mind.
 
-It is also meant to be quick to reach: press Command + Space, type "camera", press Return, and the camera is open.
+Camera Simple is named for what it does. Press Command + Space, type "camera", press Return, and the camera is open. It is also simpler: a live mirror, a shutter button, and nothing else in the way.
 
 ## Features
 
