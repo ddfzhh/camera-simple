@@ -4,9 +4,9 @@ A simple camera app for the Mac.
 
 ## Why
 
-Every Mac comes with Photo Booth, but it is called Photo Booth, not Camera. When you just want the camera, to check your hair or take a quick photo, Photo Booth is not the name that comes to mind.
+Every Mac has a camera app, Photo Booth, but its name makes it hard to find when you want the camera.
 
-Camera Simple is named for what it does. Press Command + Space, type "camera", press Return, and the camera is open. It is also simpler: a live mirror, a shutter button, and nothing else in the way.
+Camera Simple is named for what it does. Press Command + Space, type "camera", press Return, and it opens to a live mirror and a shutter button.
 
 ## Features
 
@@ -19,7 +19,7 @@ Camera Simple is named for what it does. Press Command + Space, type "camera", p
 
 ## Install
 
-Download [Camera-Simple-1.2.0.dmg](https://github.com/ddfzhh/camera-simple/releases/download/v1.2.0/Camera-Simple-1.2.0.dmg) (or the DMG from the [latest release](https://github.com/ddfzhh/camera-simple/releases/latest)), open it, and drag Camera Simple to Applications.
+Download the DMG from the [latest release](https://github.com/ddfzhh/camera-simple/releases/latest), open it, and drag Camera Simple to Applications.
 
 Or with [Homebrew](https://brew.sh):
 
