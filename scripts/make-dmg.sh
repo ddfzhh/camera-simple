@@ -21,18 +21,32 @@ SIGN_ID=$(codesign -dvv "$APP" 2>&1 | sed -n 's/^Authority=\(Developer ID Applic
 
 notarize() {  # notarize <file>: submit to Apple, wait for the verdict, fail loudly if rejected
   echo "Notarizing $(basename "$1")..."
-  local out id
+  local out id status try
   out=$(xcrun notarytool submit "$1" --keychain-profile "$PROFILE" --wait 2>&1) || true
   echo "$out"
+  id=$(sed -n 's/^ *id: //p' <<<"$out" | head -1)
+  # The wait can break off (network drop, Mac asleep) while Apple keeps working on the
+  # upload: keep waiting on the same submission instead of uploading again.
+  try=0
+  while ! grep -q "status: Accepted\|status: Invalid\|status: Rejected" <<<"$out" && [ -n "$id" ] && [ $try -lt 20 ]; do
+    try=$((try + 1))
+    echo "Lost track of submission $id; waiting on it again ($try)..."
+    sleep 30
+    out=$(xcrun notarytool wait "$id" --keychain-profile "$PROFILE" 2>&1) || true
+    echo "$out"
+  done
   if ! grep -q "status: Accepted" <<<"$out"; then
-    id=$(sed -n 's/^ *id: //p' <<<"$out" | head -1)
-    [ -n "$id" ] && xcrun notarytool log "$id" --keychain-profile "$PROFILE" >&2
+    [ -n "$id" ] && xcrun notarytool log "$id" --keychain-profile "$PROFILE" >&2 || true
     echo "Notarization failed for $1" >&2
     exit 1
   fi
 }
 
-if [ -n "$SIGN_ID" ]; then
+if [ -n "$SIGN_ID" ] && { xcrun stapler validate "$APP" >/dev/null 2>&1 || xcrun stapler staple "$APP" >/dev/null 2>&1; }; then
+  # Already stapled, or Apple already has a ticket for this exact build (an earlier run
+  # was interrupted after the upload): no need to upload it again.
+  echo "App already notarized; ticket stapled."
+elif [ -n "$SIGN_ID" ]; then
   # 1. Notarize the app itself and staple its ticket, so it also opens cleanly once it
   #    has been copied out of the DMG, even offline.
   ZIP=".build/notarize-app.zip"
