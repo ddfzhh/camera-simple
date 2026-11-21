@@ -27,7 +27,7 @@ Or with [Homebrew](https://brew.sh):
 brew install --cask ddfzhh/tap/camera-simple
 ```
 
-Works on Apple Silicon and Intel Macs with macOS 12 or later. The app is signed and notarized by Apple, so it opens normally.
+Works on Apple Silicon and Intel Macs with macOS 12 or later.
 
 ## License
 
